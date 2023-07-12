@@ -87,13 +87,15 @@ function App() {
                     )}
                 </div>
 
-                <div className="flex justify-end">
-                    <button className="mt-6 bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-sm p-3 text-slate-900 w-40" onClick={addPattern}>Add Pattern</button>
-                </div>
+                {patterns.length < 2 &&
+                    <div className="flex justify-end">
+                        <button className="mt-6 bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-sm p-3 text-slate-900 w-40" onClick={addPattern}>Add Pattern</button>
+                    </div>
+                }
 
                 <div className="border-b border-b-amber-600 w-full mt-4"></div>
 
-                <button className="mt-6 bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-lg p-3 text-slate-900" onClick={generate}>Generate</button>
+                <button className={"mt-6 text-lg p-3 text-slate-900 " + (!domain ? "bg-gray-400 text-gray-400" : "bg-amber-500 hover:bg-amber-600 active:bg-amber-700")} disabled={!domain} onClick={generate}>Generate</button>
             </div>
             <div className="py-8 flex text-gray-400 gap-4">
                 <a href="https://afaan.dev" className="text-md hover:text-teal-500">&copy; Afaan Bilal</a>
