@@ -48,7 +48,7 @@ function App() {
     };
 
     return (
-        <div className="h-full py-8 flex flex-col items-center gap-6 font-mono">
+        <div className="h-full py-12 flex flex-col items-center gap-6 font-mono">
             <div className="text-white text-4xl font-extrabold">Skolar</div>
             <div className="flex flex-col max-w-full">
                 <div className="text-white text-2xl mb-4 text-center py-2 border-b border-b-amber-500">Pattern Email Generator</div>
@@ -95,7 +95,11 @@ function App() {
 
                 <button className="mt-6 bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-lg p-3 text-slate-900" onClick={generate}>Generate</button>
             </div>
-            <a href="https://afaan.dev" className="text-gray-400 text-md hover:text-teal-500">&copy; Afaan Bilal</a>
+            <div className="py-8 flex text-gray-400 gap-4">
+                <a href="https://afaan.dev" className="text-md hover:text-teal-500">&copy; Afaan Bilal</a>
+                &middot;
+                <a href="https://afaan.dev" className="text-md hover:text-teal-500">afaan.dev</a>
+            </div>
         </div>
     );
 }
