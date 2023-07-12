@@ -7,15 +7,8 @@
  */
 
 import React from 'react';
-
-type Pattern = {
-    domain: string;
-    prefix: string;
-    suffix: string;
-    length: number;
-    min: number;
-    max: number;
-};
+import { v4 as uuidv4 } from 'uuid';
+import PatternEditor, { Pattern } from './components/PatternEditor';
 
 function download(filename: string, text: string) {
     const element = document.createElement('a');
@@ -30,14 +23,25 @@ function download(filename: string, text: string) {
     document.body.removeChild(element);
 }
 
+const blankPattern = () => ({ key: uuidv4(), prefix: "", suffix: "", length: 3, min: 1, max: 100 });
+
 function App() {
-    const [pattern, setPattern] = React.useState<Pattern>({ domain: "", prefix: "", suffix: "", length: 3, min: 1, max: 100 });
+    const [domain, setDomain] = React.useState('');
+    const [patterns, setPatterns] = React.useState<Pattern[]>([blankPattern()]);
+
+    const addPattern = () => { setPatterns(prev => [...prev, blankPattern()]); };
 
     const generate = () => {
         const data: Array<string> = [];
 
-        for (let i = pattern.min; i <= pattern.max; i++) {
-            data.push(pattern.prefix + String(i).padStart(pattern.length, '0') + pattern.suffix + '@' + pattern.domain);
+        for (let i = 0; i < patterns.length; i++) {
+            let email = '';
+
+            for (let j = patterns[i].min; j <= patterns[i].max; j++) {
+                email += patterns[i].prefix + String(j).padStart(patterns[i].length, '0') + patterns[i].suffix;
+            }
+
+            data.push(email + '@' + domain);
         }
 
         download('emails.csv', data.join('\n'));
@@ -49,34 +53,45 @@ function App() {
             <div className="flex flex-col max-w-full">
                 <div className="text-white text-2xl mb-4 text-center py-2 border-b border-b-amber-500">Pattern Email Generator</div>
 
-                {pattern.domain ?
-                    <div className="text-white text-md mb-4 text-center p-4 border border-gray-500 flex flex-col items-center">
-                        <div className="font-bold mb-2 text-amber-500 border-b border-amber-500">Sample</div>
-                        <div className="text-gray-400 text-sm md:text-xl">{pattern.prefix + String(pattern.min).padStart(pattern.length, '0') + pattern.suffix + '@' + pattern.domain}</div>
-                    </div> :
-                    <div className="text-white text-md mb-4 text-center p-4 border border-gray-500 flex flex-col items-center">
-                        <div className="font-bold mb-2 text-amber-500 border-b border-amber-500">Pattern</div>
-                        <div className="text-gray-400 italic text-sm md:text-lg">[prefix][pattern][suffix]@[domain]</div>
+                <div className="text-white text-md mb-4 text-center p-4 border border-gray-500 flex flex-col items-center rounded">
+                    <div className="font-bold mb-2 text-amber-500 border-b border-amber-500">Pattern</div>
+                    <div className="text-gray-400 text-sm md:text-lg">
+                        <div className="bg-neutral-900 p-2">
+                            Pattern: [prefix][numeric][suffix]
+                        </div>
+                        <div className="bg-slate-900 p-2 mt-2">
+                            {patterns.map((_, i) => `[pattern#${i + 1}]`).join('')}@[domain]
+                        </div>
                     </div>
-                }
+                </div>
+                <div className="text-white text-md mb-4 text-center p-4 border border-gray-500 flex flex-col items-center rounded">
+                    <div className="font-bold mb-2 text-amber-500 border-b border-amber-500">Sample</div>
+                    <div className="bg-slate-900 text-gray-400 p-2 text-sm md:text-xl">
+                        {patterns.map(p => p.prefix + String(p.min).padStart(p.length, '0') + p.suffix).join('') + '@' + (domain || "skolar.in")}
+                    </div>
+                </div>
 
-                <label className="text-lg text-white mt-4">Domain</label>
-                <input placeholder="Domain" value={pattern.domain} onChange={e => setPattern({ ...pattern, domain: e.target.value })} className="text-lg bg-black text-white p-2" />
+                <label className="text-xl text-white mt-4">Domain</label>
+                <input placeholder="skolar.in" value={domain} onChange={e => setDomain(e.target.value)} className="text-xl bg-black text-white p-2" />
 
-                <label className="text-lg text-white mt-4">Prefix (optional)</label>
-                <input placeholder="Prefix (optional)" value={pattern.prefix} onChange={e => setPattern({ ...pattern, prefix: e.target.value })} className="text-lg bg-black text-white p-2" />
+                <div className="border-b border-b-amber-600 w-full mt-4"></div>
 
-                <label className="text-lg text-white mt-4">Suffix (optional)</label>
-                <input placeholder="Suffix (optional)" value={pattern.suffix} onChange={e => setPattern({ ...pattern, suffix: e.target.value })} className="text-lg bg-black text-white p-2" />
+                <div className="flex flex-col justify-center items-center">
+                    {patterns.map((pat, i) =>
+                        <PatternEditor
+                            key={pat.key} i={i}
+                            pattern={pat}
+                            onDelete={() => setPatterns(prev => prev.filter((_, index) => i !== index))}
+                            onChange={p => { const pCopy = structuredClone(patterns); pCopy[i] = p; setPatterns(pCopy); }}
+                        />
+                    )}
+                </div>
 
-                <label className="text-lg text-white mt-4">Pattern Length</label>
-                <input placeholder="Pattern length" type="number" value={pattern.length} onChange={e => setPattern({ ...pattern, length: parseInt(e.target.value) })} className="text-lg bg-black text-white p-2" />
+                <div className="flex justify-end">
+                    <button className="mt-6 bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-sm p-3 text-slate-900 w-40" onClick={addPattern}>Add Pattern</button>
+                </div>
 
-                <label className="text-lg text-white mt-4">Minimum value</label>
-                <input placeholder="Minimum value" type="number" value={pattern.min} onChange={e => setPattern({ ...pattern, min: parseInt(e.target.value) })} className="text-lg bg-black text-white p-2" />
-
-                <label className="text-lg text-white mt-4">Maximum value</label>
-                <input placeholder="Maximum value" type="number" value={pattern.max} onChange={e => setPattern({ ...pattern, max: parseInt(e.target.value) })} className="text-lg bg-black text-white p-2" />
+                <div className="border-b border-b-amber-600 w-full mt-4"></div>
 
                 <button className="mt-6 bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-lg p-3 text-slate-900" onClick={generate}>Generate</button>
             </div>
