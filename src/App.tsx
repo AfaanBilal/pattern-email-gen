@@ -2,6 +2,7 @@
  * Pattern Email Generator
  *
  * @author Afaan Bilal
+ * @link   https://afaan.dev/pattern-email-gen
  * @link   https://afaan.dev
  */
 
@@ -43,7 +44,7 @@ function App() {
     };
 
     return (
-        <div className="h-full py-40 flex flex-col justify-between items-center font-mono">
+        <div className="h-full py-8 flex flex-col items-center gap-6 font-mono">
             <div className="text-white text-4xl font-extrabold">Skolar</div>
             <div className="flex flex-col w-96">
                 <div className="text-white text-2xl mb-4 text-center py-2 border-b border-b-amber-500">Pattern Email Generator</div>
