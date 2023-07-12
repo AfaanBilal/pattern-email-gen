@@ -24,6 +24,7 @@ function download(filename: string, text: string) {
 }
 
 const blankPattern = () => ({ key: uuidv4(), prefix: "", suffix: "", length: 3, min: 1, max: 100 });
+const makePattern = (p: Pattern, j: number) => p.prefix + String(j).padStart(p.length, '0') + p.suffix;
 
 function App() {
     const [domain, setDomain] = React.useState('');
@@ -34,14 +35,32 @@ function App() {
     const generate = () => {
         const data: Array<string> = [];
 
-        for (let i = 0; i < patterns.length; i++) {
-            let email = '';
-
-            for (let j = patterns[i].min; j <= patterns[i].max; j++) {
-                email += patterns[i].prefix + String(j).padStart(patterns[i].length, '0') + patterns[i].suffix;
+        if (patterns.length == 1) {
+            for (let i = 0; i < patterns[0].max; i++) {
+                data.push(makePattern(patterns[0], i) + '@' + domain);
             }
+        } else if (patterns.length == 2) {
+            for (let i = 0; i < patterns[0].max; i++) {
+                const p1 = makePattern(patterns[0], i);
 
-            data.push(email + '@' + domain);
+                for (let j = patterns[1].min; j <= patterns[1].max; j++) {
+                    const p2 = makePattern(patterns[1], j);
+                    data.push(p1 + p2 + '@' + domain);
+                }
+            }
+        } else {
+            for (let i = 0; i < patterns[0].max; i++) {
+                const p1 = makePattern(patterns[0], i);
+
+                for (let j = patterns[1].min; j <= patterns[1].max; j++) {
+                    const p2 = makePattern(patterns[1], j);
+
+                    for (let k = patterns[2].min; k <= patterns[2].max; k++) {
+                        const p3 = makePattern(patterns[2], k);
+                        data.push(p1 + p2 + p3 + '@' + domain);
+                    }
+                }
+            }
         }
 
         download('emails.csv', data.join('\n'));
