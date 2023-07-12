@@ -46,8 +46,19 @@ function App() {
     return (
         <div className="h-full py-8 flex flex-col items-center gap-6 font-mono">
             <div className="text-white text-4xl font-extrabold">Skolar</div>
-            <div className="flex flex-col w-96">
+            <div className="flex flex-col max-w-full" style={{ minWidth: "30rem" }}>
                 <div className="text-white text-2xl mb-4 text-center py-2 border-b border-b-amber-500">Pattern Email Generator</div>
+
+                {pattern.domain ?
+                    <div className="text-white text-md mb-4 text-center p-4 border border-gray-500 flex flex-col items-center">
+                        <div className="font-bold mb-2 text-amber-500 border-b border-amber-500">Sample</div>
+                        <div className="text-gray-400 text-xl">{pattern.prefix + String(pattern.min).padStart(pattern.length, '0') + pattern.suffix + '@' + pattern.domain}</div>
+                    </div> :
+                    <div className="text-white text-md mb-4 text-center p-4 border border-gray-500 flex flex-col items-center">
+                        <div className="font-bold mb-2 text-amber-500 border-b border-amber-500">Pattern</div>
+                        <div className="text-gray-400 text-lg italic">[prefix][pattern][suffix]@[domain]</div>
+                    </div>
+                }
 
                 <label className="text-lg text-white mt-4">Domain</label>
                 <input placeholder="Domain" value={pattern.domain} onChange={e => setPattern({ ...pattern, domain: e.target.value })} className="text-lg bg-black text-white p-2" />
