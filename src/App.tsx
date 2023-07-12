@@ -95,7 +95,7 @@ function App() {
 
                 <div className="border-b border-b-amber-600 w-full mt-4"></div>
 
-                <div className="flex flex-col justify-center items-center">
+                <div className="flex flex-col justify-center items-center w-full">
                     {patterns.map((pat, i) =>
                         <PatternEditor
                             key={pat.key} i={i}
